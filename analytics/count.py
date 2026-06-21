@@ -8,8 +8,13 @@ model = YOLO("yolov8n.pt")
 cap = cv2.VideoCapture("videos/traffic.mp4")
 
 # Variables for counting
+
 counted_ids = set()
-vehicle_count = 0
+
+car_count = 0
+truck_count = 0
+bus_count = 0
+bike_count = 0
 
 # Position of counting line
 line_y = 300
@@ -67,20 +72,28 @@ while True:
                             1)
 
                 # Count vehicle when crossing line
-                center_y = (y1 + y2) // 2
-
-                if center_y > line_y and track_id not in counted_ids:
+                if y1 < line_y < y2 and track_id not in counted_ids:
                     counted_ids.add(track_id)
-                    vehicle_count += 1
+
+                    if class_name == "car":
+                        car_count += 1
+                    elif class_name == "truck":
+                        truck_count += 1
+                    elif class_name == "bus":
+                        bus_count += 1
+                    elif class_name == "motorbike":
+                        bike_count += 1
 
     # Display vehicle count
+    count_text = f"Cars: {car_count}  Trucks: {truck_count}  Buses: {bus_count}  Bikes: {bike_count}"
     cv2.putText(frame,
-                f"Count: {vehicle_count}",
-                (50, 50),
+                count_text,
+                (10, 30),
                 cv2.FONT_HERSHEY_SIMPLEX,
-                1,
+                0.7,
                 (255, 0, 0),
                 2)
+    
 
     # Show output
     cv2.imshow("Vehicle Tracking and Counting", frame)
